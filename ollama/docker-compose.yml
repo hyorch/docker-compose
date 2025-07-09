@@ -1,0 +1,22 @@
+# docker-compose file to run ollama in a container
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - /var/opt/ollama:/ollama
+    environment:
+      - OLLAMA_MODELS=/ollama
+    restart: unless-stopped
+    networks:
+      - local_network
+
+ 
+  
+
+networks:
+  local_network:
+    name: local_network
+    driver: bridge

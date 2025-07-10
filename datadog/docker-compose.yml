@@ -3,14 +3,14 @@ name: datadog
 services:
 
   dd-agent:
-    image: datadog/agent:latest
+    image: gcr.io/datadoghq/agent:latest
     container_name: dd-agent  
     privileged: true
     
     environment:
       - DD_API_KEY=$DD_API_KEY
-      - DD_HOSTNAME=jenkins-jpastor-agent
-      - DD_TAGS=application:jenkins source:jpastor-pc
+      - DD_HOSTNAME=dd-jpastor-agent
+      - DD_TAGS=source:jpastor-pc
       - DD_LOGS_ENABLED=true
       - DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
       - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
@@ -20,6 +20,20 @@ services:
       - DD_PROCFS_PATH=/proc
       - DD_PROCESS_CONFIG_PROCESS_COLLECTION_ENABLED=true
       - DD_OTELCOLLECTOR_ENABLED=true
+      - DD_SYSTEM_PROBE_NETWORK_ENABLED=true
+      - DD_PROCESS_AGENT_ENABLED=true
+    
+    cap_add:
+      - SYS_ADMIN
+      - SYS_RESOURCE
+      - SYS_PTRACE
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+      - IPC_LOCK
+      - CHOWN
+    security_opt:
+      - apparmor:unconfined
 
     ports:
       - '4318:4318/tcp'
@@ -34,6 +48,7 @@ services:
       - /proc/:/host/proc:ro
       - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
       - /etc/os-release:/host/etc/os-release:ro
+      - /sys/kernel/debug:/sys/kernel/debug
     networks:
       - local_network
     restart: unless-stopped

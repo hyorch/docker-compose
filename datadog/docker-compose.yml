@@ -67,7 +67,35 @@ services:
     
     networks:
       - local_network
+  
+  notes_app:
+    container_name: notes
+    restart: always
+    build:
+      context: ./apm-tutorial-python/
+      dockerfile: docker/containers/solution/Dockerfile.notes
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=test_postgres      # References the Postgres container
+      - CALENDAR_HOST=calendar      # References the calendar container
+      - DD_AGENT_HOST=dd-agent      # Should reference the service name of the Datadog agent container in this docker-compose
 
+    networks:
+      - local_network
+
+  db:
+    container_name: test_postgres
+    image: "postgres"
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: testdb
+      POSTGRES_HOST_AUTH_METHOD: trust 
+
+    networks:
+      - local_network
   
 networks:
   local_network:

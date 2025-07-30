@@ -1,0 +1,67 @@
+# Docker compose file for Jenkins CI/CD
+name: datadog 
+services:
+
+  dd-agent:
+    image: gcr.io/datadoghq/agent:latest
+    container_name: dd-agent  
+    privileged: true
+    
+    environment:
+      - DD_API_KEY=$DD_API_KEY
+      - DD_HOSTNAME=dd-jpastor-agent
+      - DD_TAGS=source:jpastor-pc
+      - DD_LOGS_ENABLED=true
+      - DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
+      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
+      - DD_DOGSTATSD_ORIGIN_DETECTION_CLIENT=true
+      - DD_APM_NON_LOCAL_TRAFFIC=true
+      - DD_APM_ENABLED=true      
+      - DD_PROCFS_PATH=/proc
+      - DD_PROCESS_CONFIG_PROCESS_COLLECTION_ENABLED=true
+      - DD_OTELCOLLECTOR_ENABLED=true
+      - DD_SYSTEM_PROBE_NETWORK_ENABLED=true
+      - DD_PROCESS_AGENT_ENABLED=true
+    
+    cap_add:
+      - SYS_ADMIN
+      - SYS_RESOURCE
+      - SYS_PTRACE
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+      - IPC_LOCK
+      - CHOWN
+    security_opt:
+      - apparmor:unconfined
+
+    ports:
+      - '4318:4318/tcp'
+      - '8125:8125/udp'      
+      - '8126:8126/tcp'
+      - '10518:10518/tcp'
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /opt/datadog-agent/run:/opt/datadog-agent/run:rw
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /proc/:/host/proc:ro
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+      - /etc/os-release:/host/etc/os-release:ro
+      - /sys/kernel/debug:/sys/kernel/debug
+
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+    networks:
+      - local_network
+    restart: unless-stopped
+    
+  
+networks:
+  local_network:
+    name: local_network
+    driver: bridge

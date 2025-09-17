@@ -37,5 +37,5 @@ networks:
   local_network:
     name: local_network
     driver: bridge
-    external: true
+    #external: true
       

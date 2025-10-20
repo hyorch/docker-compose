@@ -1,0 +1,38 @@
+#Sonarqube Local Install
+
+services:
+  sonarqube:
+    image: sonarqube:latest
+    container_name: sonarqube
+    environment:
+      # set database to external
+      - SONAR_JDBC_URL=jdbc:postgresql://postgres:5432/sonarqube
+      - SONAR_JDBC_USERNAME=sonarqube
+      - SONAR_JDBC_PASSWORD=sonarqube
+      - SONAR_JDBC_DRIVER=org.postgresql.Driver
+    ports:
+      - "9000:9000"
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=sonarqube
+      - POSTGRES_PASSWORD=sonarqube
+      - POSTGRES_DB=sonarqube
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+volumes:
+  sonarqube_data:
+    driver: local
+  postgres_data:
+    driver: local

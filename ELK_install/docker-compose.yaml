@@ -26,7 +26,7 @@ services:
     depends_on:
       - elasticsearch
     deploy:
-      resources:  
+      resources:
         limits:
           cpus: '1'
           memory: 2048M

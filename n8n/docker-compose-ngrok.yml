@@ -13,7 +13,8 @@ services:
       - N8N_RUNNERS_ENABLED=true
       - N8N_RUNNERS_MODE=internal
       - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
-         
+      - WEBHOOK_URL=${NGROK_URL}
+    
     ports:
       - 5678:5678
     volumes:
@@ -25,6 +26,15 @@ services:
           cpus: '1'
           memory: 2048M
   
+  ngrok:
+    image: ngrok/ngrok
+    container_name: "ngrok"
+    restart: unless-stopped
+    command: http n8n:5678
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    depends_on:
+      - n8n
 
 volumes:
   n8n_data:

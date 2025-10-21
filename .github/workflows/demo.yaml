@@ -21,14 +21,14 @@ jobs:
       # so that SonarQube can pick up coverage and compiled artifacts.
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v4
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           # If you have a sonar-project.properties, you can remove the args below.
           args: >
-            -Dsonar.projectKey=${{ github.repository }}
+            -Dsonar.projectKey=${{ github.respository.name }}
             -Dsonar.projectName=${{ github.repository }}
             -Dsonar.branch.name=${{ github.ref_name }}
 

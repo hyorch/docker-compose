@@ -6,6 +6,8 @@ on:
     branches: ['**']
   pull_request:
     branches: ['**']
+  # manually trigger the workflow
+  workflow_dispatch:
 
 jobs:
   sonarqube:

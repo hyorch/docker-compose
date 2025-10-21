@@ -25,8 +25,8 @@ jobs:
         with:
           # If you have a sonar-project.properties, you can remove the args below.
           args: >
-            -Dsonar.projectKey="${{ github.event.repository.name }}-${{ github.ref_name }}"
-            -Dsonar.projectName="${{ github.event.repository.name }}-${{ github.ref_name }}"
+            -Dsonar.projectKey=${{ github.event.repository.name }}-${{ github.ref_name }}
+            -Dsonar.projectName=${{ github.event.repository.name }}-${{ github.ref_name }}
 
           # Not supported for Community Edition
           # -Dsonar.branch.name=${{ github.ref_name }}

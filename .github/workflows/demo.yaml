@@ -30,7 +30,8 @@ jobs:
           args: >
             -Dsonar.projectKey=${{ github.event.repository.name }}
             -Dsonar.projectName=${{ github.repository }}
-            -Dsonar.branch.name=${{ github.ref_name }}
+
+            # -Dsonar.branch.name=${{ github.ref_name }}
 
       # Optional: Wait for Quality Gate result (fails the job if not passed)
       - name: SonarQube Quality Gate

@@ -1,0 +1,55 @@
+filebeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    reload.enabled: false
+
+
+filebeat.inputs:
+- type: filestream
+  id: es-logs
+  paths:
+    - /usr/share/elasticsearch/logs/*.log*
+  processors:
+    - add_fields:
+        target: 'kmm'
+        fields:
+          service: elasticsearch
+
+- type: filestream
+  id: kibana-logs
+  paths:
+    - /usr/share/kibana/logs/kibana.log*
+  parsers:
+    - ndjson:
+        target: ""
+        overwrite_keys: true
+        add_error_key: true
+  processors:
+    - add_fields:
+        target: 'kmm'
+        fields:
+          service: kibana
+
+- type: filestream
+  id: filebeat-logs
+  paths:
+    - /usr/share/filebeat/logs/filebeat-*.ndjson 
+  parsers:
+    - ndjson:
+        target: ""
+        overwrite_keys: true
+        add_error_key: true 
+  processors:
+    - add_fields:
+        target: 'kmm'
+        fields:
+          service: filebeat
+
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+
+setup.kibana:
+  host: "kibana:5601"
+
+
+

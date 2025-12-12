@@ -1,0 +1,16 @@
+server.host: "0.0.0.0"
+server.shutdownTimeout: "5s"
+elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+elasticsearch.username: "kibana_system"
+monitoring.ui.container.elasticsearch.enabled: true
+
+# Configuración de Logs a archivo
+logging:
+  appenders:
+    file:
+      type: file
+      fileName: /usr/share/kibana/logs/kibana.log
+      layout:
+        type: json
+  root:
+    appenders: [default, file]

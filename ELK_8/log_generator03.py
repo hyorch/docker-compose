@@ -22,7 +22,7 @@ else:
 
 base_index_name = "c-logs"
 
-print(f"Comenzando generador de logs. Enviando a índices cada 20 segundos...")
+print(f"Comenzando generador de logs. Enviando a índices cada 30 segundos...")
 
 while True:
     try:
@@ -50,4 +50,4 @@ while True:
     except Exception as e:
         print(f"Error enviando log: {e}")
 
-    time.sleep(20)
+    time.sleep(30)

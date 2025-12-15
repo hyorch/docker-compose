@@ -22,7 +22,7 @@ else:
 
 base_index_name_02 = "java-logs"
 
-print(f"Comenzando generador de logs. Enviando a índices cada 60 segundos...")
+print(f"Comenzando generador de logs. Enviando a índices cada 30 segundos...")
 
 while True:
     try:
@@ -49,4 +49,4 @@ while True:
     except Exception as e:
         print(f"Error enviando log: {e}")
 
-    time.sleep(60)
+    time.sleep(30)

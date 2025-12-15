@@ -26,6 +26,8 @@ PUT _ilm/policy/Java-Policy
 }
 ```
 
+## ILM Policy that mantain just monday to friday data
+
 ## Apply a policy to an already created index
 
 ```bash

@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   nginx:
     image: nginx:latest
@@ -12,3 +10,10 @@ services:
       - ./config/key.pem:/etc/nginx/ssl/key.pem:ro
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+    # limit cpu and memory
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M

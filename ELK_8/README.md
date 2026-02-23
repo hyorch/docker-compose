@@ -28,6 +28,8 @@ PUT _ilm/policy/Java-Policy
 
 ## ILM Policy that mantain just monday to friday data
 
+No se puede crear con ILM. Es necesaria programación.
+
 ## Apply a policy to an already created index
 
 ```bash
@@ -37,6 +39,21 @@ PUT java-logs-2025.12.11.17/_settings
     "lifecycle": {
       "name": "Java-Policy"
     }
+  }
+}
+```
+
+## ReIndex. Copy documents to other index
+
+```bash
+
+POST _reindex?wait_for_completion=true
+{
+  "source": {
+    "index": "python-logs-2026.02.23.16"
+  },
+  "dest": {
+    "index": "python-logs-2026"
   }
 }
 ```

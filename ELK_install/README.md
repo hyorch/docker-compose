@@ -1,6 +1,15 @@
 # Install ELK
 
+https://www.elastic.co/docs/deploy-manage/deploy/self-managed/install-elasticsearch-docker-basic
 
+Ejecutar primero Elasticsearch y obtener el password y token.
+
+```bash
+docker exec -it elasticsearch /usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic
+docker exec -it elasticsearch /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana
+```
+
+Ejecutar luego Kibana, sin parámetros que apunten a Elasticsearch, ya que van en el enrollment token. Pegar el token.
 
 ## Insert ELK
 

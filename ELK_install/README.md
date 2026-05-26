@@ -1,5 +1,10 @@
 # Install ELK
 
+Script de Elasti para instalar con Docker Compose
+https://github.com/elastic/start-local
+
+
+
 https://www.elastic.co/docs/deploy-manage/deploy/self-managed/install-elasticsearch-docker-basic
 
 Ejecutar primero Elasticsearch y obtener el password y token.

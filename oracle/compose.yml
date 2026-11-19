@@ -1,25 +1,40 @@
 services:
-  oracle-db:
-    image: container-registry.oracle.com/database/free:latest-lite
+  # Name of the Docker Compose service
+  oracle:
+    # Docker Hub image (feel free to change the tag "latest" to any other available one)
     container_name: oracle-free
+    image: gvenzl/oracle-free:latest
+    # Forward Oracle port to localhost
     ports:
       - "1521:1521"
+    # Provide passwords and other environment variables to the container
     environment:
-      # Contraseña para SYS, SYSTEM y PDBADMIN (obligatoria)
-      ORACLE_PWD: TuPasswordFuerte123
-      # Opcional: Juego de caracteres de la base de datos
-      ORACLE_CHARACTERSET: AL32UTF8
-    volumes:
-      # Persistencia de los datos
-      - oracle-data:/opt/oracle/oradata
-      # Opcional: Scripts .sql o .sh que se ejecutan solo en el primer arranque
-      - ./init-scripts:/opt/oracle/scripts/startup
+      ORACLE_PASSWORD: sys_user_password
+      ORACLE_DATABASE: PDB1
+      APP_USER: my_user
+      APP_USER_PASSWORD: password_i_should_change
+    # Customize healthcheck script options for startup
     healthcheck:
-      test: ["CMD-SHELL", "healthcheck.sh || exit 1"]
-      interval: 15s
-      timeout: 10s
-      retries: 15
-      start_period: 60s
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+      start_interval: 5s
+    # Mount a local SQL file to initialize your schema at startup
+    volumes:
+      #- ./init-scripts/my-init.sql:/container-entrypoint-initdb.d/my-init.sql:ro
+      - oracle-volume:/opt/oracle/oradata gvenzl/oracle-free
+
+    networks:
+      - prometheus
 
 volumes:
-  oracle-data:
+    oracle-volume:
+        
+networks:
+  prometheus:
+    name: prometheus
+    driver: bridge
+    external: true
+

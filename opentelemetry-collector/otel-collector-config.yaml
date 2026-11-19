@@ -24,6 +24,29 @@ receivers:
       disk:
       filesystem:
 
+  # sqlqueryreceiver
+  sql_query:
+    driver: oracle
+    datasource: "oracle://my_user:password_i_should_change@oracle-free:1521/FREEPDB1"
+    queries:
+      - sql: "select sum(amount) as dinerito, name from table_money group by name;"
+        metrics:
+          - metric_name: table_money.names
+            value_column: DINERITO
+            attribute_columns: [NAME]
+            static_attributes:
+              dbinstance: FREEPDB1
+            data_type: gauge
+            unit: euros
+            description: "Total dinerito by name"
+         
+    
+    telemetry:
+      logs:        
+        query: true
+       
+
+
 processors:
   batch:
     # https://github.com/open-telemetry/opentelemetry-collector/tree/main/processor/batchprocessor
@@ -59,7 +82,7 @@ exporters:
       insecure: true
   
   debug:
-    verbosity: normal
+    verbosity: detailed
 
 service:
   telemetry:
@@ -69,7 +92,9 @@ service:
 
   pipelines:
     metrics:
-      receivers: [otlp, host_metrics, host_metrics/disk]
+      #receivers: [otlp, host_metrics, host_metrics/disk, sql_query]
+      receivers: [sql_query]
       processors: [resource_detection, batch]
-      exporters: [otlp_http/prometheus]
+      exporters: [otlp_http/prometheus,debug]
+      
 

@@ -1,0 +1,27 @@
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib
+    container_name: otel-collector
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    command:
+      - '--config=/etc/otel-collector-config.yaml'
+    ports:
+      - 4317:4317
+      - 4318:4318
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+      -  /:/hostfs:ro  # enable filesystem monitor
+      -  /var/run/docker.sock:/var/run/docker.sock:ro # enable resource detection
+
+    networks:
+      - prometheus
+
+    group_add:
+      - "1001" # stat -c '%g' /var/run/docker.sock
+
+networks:
+  prometheus:
+    name: prometheus
+    driver: bridge
+    external: true

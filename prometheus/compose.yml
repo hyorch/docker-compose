@@ -1,0 +1,44 @@
+
+
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.enable-remote-write-receiver' # Enable receive remote write
+      - '--web.enable-otlp-receiver' # Enable receive otlp
+    ports:
+      - 9090:9090
+      - 9091:9091
+    restart: unless-stopped
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prom_data:/prometheus
+    networks:
+      - prometheus
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: grafana
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=grafana
+    volumes:
+      - ./grafana:/etc/grafana/provisioning/datasources
+      - grafana_data:/var/lib/grafana
+
+    networks:
+      - prometheus
+
+volumes:
+  prom_data:
+  grafana_data:
+
+networks:
+  prometheus:
+    name: prometheus
+    driver: bridge
+    external: true

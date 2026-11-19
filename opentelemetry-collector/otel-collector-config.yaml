@@ -1,0 +1,75 @@
+# local metrics collection
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+  # local host metrics
+  host_metrics:
+    root_path: /hostfs
+    collection_interval: 30s
+    scrapers:
+      cpu:
+      load:
+      memory:
+      network:
+  
+  host_metrics/disk:
+    root_path: /hostfs
+    collection_interval: 1m
+    scrapers:
+      disk:
+      filesystem:
+
+processors:
+  batch:
+    # https://github.com/open-telemetry/opentelemetry-collector/tree/main/processor/batchprocessor
+  resource_detection:
+    # Enriches telemetry data with resource information from the host
+    # https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/resourcedetectionprocessor
+    detectors: ["env","docker","system"]
+    override: false
+    docker:
+      resource_attributes:
+        host.name:
+          enabled: true
+        os.type:
+          enabled: true
+        container.name:
+          enabled: true
+    #     container.image.name:
+    #       enabled: true
+    
+
+# send metrics to prometheus
+exporters:
+  prometheus_remote_write/prometheus:
+    http:
+      endpoint: http://prometheus:9090/api/v1/write
+    resource_to_telemetry_conversion:
+      enabled: true # Convert resource attributes to metric labels
+  
+  otlp_http/prometheus:
+    endpoint: http://prometheus:9090/api/v1/otlp
+   
+    tls:
+      insecure: true
+  
+  debug:
+    verbosity: normal
+
+service:
+  telemetry:
+    logs:
+      level: debug
+      encoding: console
+
+  pipelines:
+    metrics:
+      receivers: [otlp, host_metrics, host_metrics/disk]
+      processors: [resource_detection, batch]
+      exporters: [otlp_http/prometheus]
+

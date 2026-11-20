@@ -24,29 +24,37 @@ receivers:
       disk:
       filesystem:
 
-  # sqlqueryreceiver
-  sql_query:
+  # Métricas del motor Oracle
+  # https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/oracledbreceiver
+  oracledb:
+    datasource: "oracle://system:sys_user_password@oracle-free:1521/FREEPDB1"
+
+  # sqlqueryreceiver gauge example
+  sql_query/gauge:
     driver: oracle
     datasource: "oracle://my_user:password_i_should_change@oracle-free:1521/FREEPDB1"
     queries:
-      - sql: "select sum(amount) as dinerito, name from table_money group by name;"
+      - sql: "select sum(amount) as DINERITO, count(*) as MOVIMIENTOS, NAME from table_money group by name;"
         metrics:
           - metric_name: table_money.names
-            value_column: DINERITO
+            value_column: DINERITO # en mayúsculas porque el resultado de la query lo pone en mayúsculas
             attribute_columns: [NAME]
             static_attributes:
               dbinstance: FREEPDB1
             data_type: gauge
             unit: euros
-            description: "Total dinerito by name"
-         
-    
+            description: "Total dinerito by name"  
+          - metric_name: table_money.movimientos
+            value_column: MOVIMIENTOS # en mayúsculas porque el resultado de la query lo pone en mayúsculas
+            attribute_columns: [NAME]
+            static_attributes:
+              dbinstance: FREEPDB1
+            data_type: gauge
+            description: "Total movimientos de dinero"       
     telemetry:
-      logs:        
+      logs: # mostrar la query que se ejecuta en los logs       
         query: true
-       
-
-
+  
 processors:
   batch:
     # https://github.com/open-telemetry/opentelemetry-collector/tree/main/processor/batchprocessor
@@ -92,9 +100,8 @@ service:
 
   pipelines:
     metrics:
-      #receivers: [otlp, host_metrics, host_metrics/disk, sql_query]
-      receivers: [sql_query]
+      receivers: [otlp, host_metrics, host_metrics/disk, sql_query/gauge,oracledb]
       processors: [resource_detection, batch]
-      exporters: [otlp_http/prometheus,debug]
+      exporters: [otlp_http/prometheus]
       
 
